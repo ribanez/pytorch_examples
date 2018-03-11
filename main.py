@@ -99,21 +99,3 @@ else:
     model.train(epochs=epochs,
                 train_loader=train_loader,
                 val_loader=val_loader)
-
-
-model.save_model(path_model + "model_10epochs.tar")
-
-
-
-#### Probando el retrain
-model2 = Model_Mnist(use_cuda=use_cuda,
-                    loss_metric=loss_metric,
-                    lr=lr,
-                    momentum=momentum,
-                    root_models=path_model)
-
-model2.retrain(path_model + "model_10epochs.tar")
-
-model2.train(epochs=epochs,
-             train_loader=train_loader,
-             val_loader=val_loader)
