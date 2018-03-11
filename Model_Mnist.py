@@ -98,7 +98,10 @@ class Model_Mnist():
                              )
 
     def on_epoch_begin(self):
-        pass
+        if not self.verbose and self.total_batch_number is not -1:
+            sys.stdout.write("[%s]" % (" " * self.total_batch_number))
+            sys.stdout.flush()
+            sys.stdout.write("\b" * (self.total_batch_number + 1))
 
     def on_epoch_end(self, epoch_idx, val_loader, val_loss_prev):
         ## Calculamos Accuracy y perdida en Validation Set
@@ -135,11 +138,6 @@ class Model_Mnist():
         return val_loss if  val_loss < val_loss_prev else val_loss_prev
 
     def on_batch_begin(self, x, y):
-        if not self.verbose and self.total_batch_number is not -1:
-            sys.stdout.write("[%s]" % (" " * self.total_batch_number))
-            sys.stdout.flush()
-            sys.stdout.write("\b" * (self.total_batch_number + 1))
-
         x, y = Variable(x), Variable(y)
         if self.use_cuda:
             x, y = x.cuda(), y.cuda()
