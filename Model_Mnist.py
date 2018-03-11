@@ -143,15 +143,15 @@ class Model_Mnist():
         loss.backward()
         self.optimizer.step()
         ## Imprimimos la perdida de cada epoca
-        if self.verbose:
-            if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader:
+        if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader:
+            if self.verbose:
                 sys.stdout.write("epoch: {}, batch index: {}, train loss: {:.6f}\n".format(epoch_idx,
                                                                                          batch_idx + 1,
                                                                                          loss.data[0]
                                                                                         )
                                 )
-        else:
-            sys.stdout.write(">")
+            else:
+                sys.stdout.write(">")
 
     @staticmethod
     def save_checkpoint(state, is_best, filename):
