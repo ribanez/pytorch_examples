@@ -113,7 +113,7 @@ class Model_Mnist():
             correct_cnt += (pred_label == target.data).sum()
 
         ## Imprimimos la perdida y el accuracy en el conjunto de validacion
-        sys.stdout.write("\nepoch: {}, validation loss: {:.6f}, acc: {:.3f}\n".format(epoch_idx,
+        sys.stdout.write("\nepoch: {}, validation loss: {:.6f}, acc: {:.3f}\n\n".format(epoch_idx,
                                                                        loss.data[0],
                                                                        correct_cnt * 1.0 / total_cnt
                                                                        )
