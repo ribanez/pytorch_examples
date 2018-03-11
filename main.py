@@ -100,7 +100,7 @@ else:
                 val_loader=val_loader)
 
 
-model.save_model(path_model + "model_10epochs")
+model.save_model(path_model + "model_10epochs.tar")
 
 
 
