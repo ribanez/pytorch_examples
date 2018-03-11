@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9150b43d-78bb-49a6-8bdb-cf193d6d3744" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/Model_Mnist.py" afterPath="$PROJECT_DIR$/Model_Mnist.py" />
-      <change beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -17,8 +16,8 @@
       <file leaf-file-name="Model_Mnist.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Model_Mnist.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1866">
-              <caret line="123" column="90" lean-forward="false" selection-start-line="123" selection-start-column="90" selection-end-line="123" selection-end-column="90" />
+            <state relative-caret-position="-599">
+              <caret line="95" column="0" lean-forward="true" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -51,6 +50,7 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>name</find>
+      <find>on_batch_end</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -275,8 +275,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Model_Mnist.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1866">
-          <caret line="123" column="90" lean-forward="false" selection-start-line="123" selection-start-column="90" selection-end-line="123" selection-end-column="90" />
+        <state relative-caret-position="-599">
+          <caret line="95" column="0" lean-forward="true" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
           <folding />
         </state>
       </provider>

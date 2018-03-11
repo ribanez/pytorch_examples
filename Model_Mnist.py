@@ -88,8 +88,11 @@ class Model_Mnist():
 
     def on_train_end(self):
         sys.stdout.write("\nTerminó el entrenamiento ...\n")
-        self.save_model(self.root_models + self.model.__name__() + "_last.tar")
-        pass
+        self.save_checkpoint({'name': self.model.__name__(),
+                              'state_dict': self.model.state_dict(),
+                              }, False,
+                             self.root_models + self.model.__name__() + "_finalmodel.tar"
+                             )
 
     def on_epoch_begin(self):
         pass
@@ -109,12 +112,14 @@ class Model_Mnist():
             total_cnt += x.data.size()[0]
             correct_cnt += (pred_label == target.data).sum()
 
-        print("\nepoch: {}, validation loss: {:.6f}, acc: {:.3f}\n".format(epoch_idx,
+        ## Imprimimos la perdida y el accuracy en el conjunto de validacion
+        sys.stdout.write("\nepoch: {}, validation loss: {:.6f}, acc: {:.3f}\n".format(epoch_idx,
                                                                        loss.data[0],
                                                                        correct_cnt * 1.0 / total_cnt
                                                                        )
              )
         val_loss = loss.data[0]
+        ## Guardamos el modelo si es el mejor
         is_best = val_loss < val_loss_prev
         self.save_checkpoint({'epoch': epoch_idx + 1,
                               'name': self.model.__name__(),
@@ -136,15 +141,13 @@ class Model_Mnist():
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+        ## Imprimimos la perdida de cada epoca
         if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader:
-            print("epoch: {}, batch index: {}, train loss: {:.6f}".format(epoch_idx,
-                                                                          batch_idx + 1,
-                                                                          loss.data[0]
-                                                                          )
-                  )
-
-    def save_model(self, path_to_file):
-        torch.save(self.model.state_dict(), path_to_file)
+            sys.stdout.write("epoch: {}, batch index: {}, train loss: {:.6f}".format(epoch_idx,
+                                                                                     batch_idx + 1,
+                                                                                     loss.data[0]
+                                                                                    )
+                            )
 
     @staticmethod
     def save_checkpoint(state, is_best, filename):
