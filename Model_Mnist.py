@@ -1,4 +1,6 @@
+import sys
 import torch
+import shutil
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
@@ -36,12 +38,12 @@ class CNN(nn.Module):
         return F.log_softmax(x)
 
 
-
 class Model_Mnist():
 
-    def __init__(self, use_cuda, loss_metric, lr, momentum):
+    def __init__(self, use_cuda, loss_metric, lr, momentum, root_models):
         self.use_cuda = use_cuda
         self.loss_metric = loss_metric
+        self.root_models = root_models
 
         self.model = CNN()
         if self.use_cuda:
@@ -56,31 +58,43 @@ class Model_Mnist():
             self.model.load_state_dict(torch.load(path_file, map_location=lambda storage, loc: storage))
             self.model.cpu()
 
-
     def train(self, epochs, train_loader, val_loader):
+        val_loss = self.on_train_begin()
 
         for epoch_idx in range(1, epochs+1):
-            # trainning
-            self.on_epoch_train(epoch_idx, train_loader)
-            self.end_epoch_train(epoch_idx, val_loader)
+            self.on_epoch_begin()
 
-    def on_epoch_train(self, epoch_idx, train_loader):
-        for batch_idx, (x, y) in enumerate(train_loader):
-            x, y = Variable(x), Variable(y)
-            if self.use_cuda:
-                x, y = x.cuda(), y.cuda()
-            y_pred = self.model(x)
-            loss = self.loss_metric(y_pred, y)
+            for batch_idx, (x, y) in enumerate(train_loader):
 
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
+                x,y = self.on_batch_begin(x, y)
 
-            self.end_batch_train(batch_idx, len(train_loader), epoch_idx, loss)
+                y_pred = self.model(x)
+                loss = self.loss_metric(y_pred, y)
 
-    def end_epoch_train(self, epoch_idx, val_loader):
-        correct_cnt= 0
+                self.on_batch_end(loss, batch_idx, epoch_idx, len(train_loader))
+
+            val_loss = self.on_epoch_end(epoch_idx, val_loader, val_loss)
+
+        self.on_train_end()
+
+    def on_train_begin(self):
+        sys.stdout.write("Comenzó el entrenamiento ...")
+        val_loss = 1e5
+        return val_loss
+
+    def on_train_end(self):
+        sys.stdout.write("Terminó el entrenamiento ...")
+        self.save_model(self.root_models + self.model.name() + "_last.tar")
+        pass
+
+    def on_epoch_begin(self):
+        pass
+
+    def on_epoch_end(self, epoch_idx, val_loader, val_loss_prev):
+        ## Calculamos Accuracy y perdida en Validation Set
+        correct_cnt = 0
         total_cnt = 0
+        loss = 1e5
         for batch_idx, (x, y) in enumerate(val_loader):
             if self.use_cuda:
                 x, y = x.cuda(), y.cuda()
@@ -91,26 +105,45 @@ class Model_Mnist():
             total_cnt += x.data.size()[0]
             correct_cnt += (pred_label == target.data).sum()
 
-            self.end_batch_val(batch_idx, len(val_loader), epoch_idx, loss, correct_cnt, total_cnt)
+        print("epoch: {}, validation loss: {:.6f}, acc: {:.3f}".format(epoch_idx,
+                                                                       loss.data[0],
+                                                                       correct_cnt * 1.0 / total_cnt
+                                                                       )
+             )
+        val_loss = loss.data[0]
+        is_best = val_loss < val_loss_prev
+        self.save_checkpoint({'epoch': epoch_idx + 1,
+                              'name': self.model.name(),
+                              'state_dict': self.model.state_dict(),
+                              'best_prec1': val_loss,
+                             }, is_best,
+                             self.root_models + self.model.name() + "_epoch{}_vallos{}.tar".format(epoch_idx+1, val_loss)
+                             )
 
-    def save_model(self, path_to_file):
-        torch.save(self.model.state_dict(), path_to_file)
+        return val_loss if  val_loss < val_loss_prev else val_loss_prev
 
-    @staticmethod
-    def end_batch_train(batch_idx, len_train_loader, idx_epoch, loss):
+    def on_batch_begin(self, x, y):
+        x, y = Variable(x), Variable(y)
+        if self.use_cuda:
+            x, y = x.cuda(), y.cuda()
+        return x, y
+
+    def on_batch_end(self, loss, batch_idx, epoch_idx, len_train_loader):
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
         if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader:
-            print("epoch: {}, batch index: {}, train loss: {:.6f}".format(idx_epoch,
+            print("epoch: {}, batch index: {}, train loss: {:.6f}".format(epoch_idx,
                                                                           batch_idx + 1,
                                                                           loss.data[0]
                                                                           )
                   )
 
+    def save_model(self, path_to_file):
+        torch.save(self.model.state_dict(), path_to_file)
+
     @staticmethod
-    def end_batch_val(batch_idx, len_val_loader, idx_epoch, loss, correct_cnt, total_cnt):
-        if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_val_loader:
-            print("epoch: {}, batch index: {}, validation loss: {:.6f}, acc: {:.3f}".format(idx_epoch,
-                                                                                            batch_idx + 1,
-                                                                                            loss.data[0],
-                                                                                            correct_cnt * 1.0 / total_cnt
-                                                                                            )
-                  )
+    def save_checkpoint(state, is_best, filename):
+        torch.save(state, filename)
+        if is_best:
+            shutil.copyfile(filename, 'model_best.tar')

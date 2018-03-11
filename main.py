@@ -87,7 +87,8 @@ loss_metric = nn.CrossEntropyLoss()
 model = Model_Mnist(use_cuda=use_cuda,
                     loss_metric=loss_metric,
                     lr=lr,
-                    momentum=momentum)
+                    momentum=momentum,
+                    root_models=path_model)
 
 if not retrain:
     model.train(epochs=epochs,
@@ -111,6 +112,7 @@ model2 = Model_Mnist(use_cuda=use_cuda,
                     momentum=momentum)
 
 model2.retrain(path_model + "model_10epochs.tar")
+
 model2.train(epochs=epochs,
              train_loader=train_loader,
              val_loader=val_loader)
