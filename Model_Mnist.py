@@ -70,7 +70,7 @@ class Model_Mnist():
             if self.use_cuda:
                 x, y = x.cuda(), y.cuda()
             y_pred = self.model(x)
-            loss = self.loss_metric(y_pred, y)
+            loss = self.loss_metric(y_pred, y).data[0]
 
             self.optimizer.zero_grad()
             loss.backward()
@@ -86,7 +86,7 @@ class Model_Mnist():
                 x, y = x.cuda(), y.cuda()
             x, target = Variable(x, volatile=True), Variable(y, volatile=True)
             y_pred = self.model(x)
-            loss = self.loss_metric(y_pred, target)
+            loss = self.loss_metric(y_pred, target).data[0]
             _, pred_label = torch.max(y_pred.data, 1)
             total_cnt += x.data.size()[0]
             correct_cnt += (pred_label == target.data).sum()
