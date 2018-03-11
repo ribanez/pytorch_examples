@@ -48,6 +48,7 @@ class Model_Mnist():
         self.loss_metric = loss_metric
         self.root_models = root_models
         self.verbose = verbose
+        self.total_batch_number = -1
 
         self.model = CNN()
         if self.use_cuda:
@@ -63,6 +64,7 @@ class Model_Mnist():
             self.model.cpu()
 
     def train(self, epochs, train_loader, val_loader):
+        self.total_batch_number = len(train_loader)
         val_loss = self.on_train_begin()
 
         for epoch_idx in range(1, epochs+1):
@@ -133,6 +135,11 @@ class Model_Mnist():
         return val_loss if  val_loss < val_loss_prev else val_loss_prev
 
     def on_batch_begin(self, x, y):
+        if not self.verbose and self.total_batch_number is not -1:
+            sys.stdout.write("[%s]" % (" " * self.total_batch_number))
+            sys.stdout.flush()
+            sys.stdout.write("\b" * (self.total_batch_number + 1))
+
         x, y = Variable(x), Variable(y)
         if self.use_cuda:
             x, y = x.cuda(), y.cuda()
@@ -151,7 +158,8 @@ class Model_Mnist():
                                                                                         )
                                 )
             else:
-                sys.stdout.write(">")
+                sys.stdout.write("-")
+                sys.stdout.flush()
 
     @staticmethod
     def save_checkpoint(state, is_best, filename):
