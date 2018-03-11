@@ -68,7 +68,7 @@ momentum = 0.5
 
 train_loader = torch.utils.data.DataLoader(dataset=train_set,
                                            batch_size=batch_size,
-                                           shuffle=True,
+                                           shuffle=False,
                                            sampler=train_sampler,
                                            **kwargs
                                            )
