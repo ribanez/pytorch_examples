@@ -52,7 +52,7 @@ train_idx, valid_idx = indices[split:], indices[:split]
 train_sampler = SubsetRandomSampler(train_idx)
 valid_sampler = SubsetRandomSampler(valid_idx)
 
-path_model = './models'
+path_model = './models/'
 exist_model = os.path.isdir(path_model)
 
 if not exist_model:
@@ -60,7 +60,7 @@ if not exist_model:
 
 
 ## Hyper Parameters
-batch_size = 64
+batch_size = 32
 epochs = 10
 lr = 0.01
 momentum = 0.5
@@ -100,4 +100,4 @@ else:
                 val_loader=val_loader)
 
 
-torch.save(model.state_dict(), path_model + model.name())
+model.save_model(path_model + "model_10epochs")

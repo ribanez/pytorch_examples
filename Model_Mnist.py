@@ -93,6 +93,9 @@ class Model_Mnist():
 
             self.end_batch_val(batch_idx, len(val_loader), epoch_idx, loss, correct_cnt, total_cnt)
 
+    def save_model(self, path_to_file):
+        torch.save(self.model.state_dict(), path_to_file)
+
     @staticmethod
     def end_batch_train(batch_idx, len_train_loader, idx_epoch, loss):
         if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader:
