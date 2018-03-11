@@ -37,6 +37,9 @@ class CNN(nn.Module):
         x = self.fc2(x)
         return F.log_softmax(x)
 
+    def __name__(self):
+        return "CNN"
+
 
 class Model_Mnist():
 
@@ -77,6 +80,7 @@ class Model_Mnist():
 
         self.on_train_end()
 
+
     def on_train_begin(self):
         sys.stdout.write("Comenzó el entrenamiento ...")
         val_loss = 1e5
@@ -84,7 +88,7 @@ class Model_Mnist():
 
     def on_train_end(self):
         sys.stdout.write("Terminó el entrenamiento ...")
-        self.save_model(self.root_models + self.model.name() + "_last.tar")
+        self.save_model(self.root_models + self.model.__name__() + "_last.tar")
         pass
 
     def on_epoch_begin(self):
@@ -113,11 +117,11 @@ class Model_Mnist():
         val_loss = loss.data[0]
         is_best = val_loss < val_loss_prev
         self.save_checkpoint({'epoch': epoch_idx + 1,
-                              'name': self.model.name(),
+                              'name': self.model.__name__(),
                               'state_dict': self.model.state_dict(),
                               'best_prec1': val_loss,
                              }, is_best,
-                             self.root_models + self.model.name() + "_epoch{}_vallos{}.tar".format(epoch_idx+1, val_loss)
+                             self.root_models + self.model.__name__() + "_epoch{}_vallos{}.tar".format(epoch_idx+1, val_loss)
                              )
 
         return val_loss if  val_loss < val_loss_prev else val_loss_prev
