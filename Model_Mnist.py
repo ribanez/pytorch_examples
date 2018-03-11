@@ -5,8 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.autograd import Variable
-
-#from torch.utils.data.dataset import random_split
+from progressbar import ProgressBar, Percentage, Bar
 
 
 ######## NEURAL NETWORK ##########
@@ -64,11 +63,13 @@ class Model_Mnist():
             self.model.cpu()
 
     def train(self, epochs, train_loader, val_loader):
-        self.total_batch_number = len(train_loader)
+        total_batch_number = len(train_loader)
         val_loss = self.on_train_begin()
 
         for epoch_idx in range(1, epochs+1):
             self.on_epoch_begin()
+            pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval = total_batch_number).start()
+
 
             for batch_idx, (x, y) in enumerate(train_loader):
 
@@ -78,6 +79,8 @@ class Model_Mnist():
                 loss = self.loss_metric(y_pred, y)
 
                 self.on_batch_end(loss, batch_idx, epoch_idx, len(train_loader))
+
+                pbar.update(batch_idx + 1)
 
             val_loss = self.on_epoch_end(epoch_idx, val_loader, val_loss)
 
@@ -98,10 +101,7 @@ class Model_Mnist():
                              )
 
     def on_epoch_begin(self):
-        if not self.verbose and self.total_batch_number is not -1:
-            sys.stdout.write("[%s]" % (" " * self.total_batch_number))
-            sys.stdout.flush()
-            sys.stdout.write("\b" * (self.total_batch_number + 1))
+        pass
 
     def on_epoch_end(self, epoch_idx, val_loader, val_loss_prev):
         ## Calculamos Accuracy y perdida en Validation Set
@@ -148,16 +148,12 @@ class Model_Mnist():
         loss.backward()
         self.optimizer.step()
         ## Imprimimos la perdida de cada epoca
-        if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader:
-            if self.verbose:
-                sys.stdout.write("epoch: {}, batch index: {}, train loss: {:.6f}\n".format(epoch_idx,
-                                                                                         batch_idx + 1,
-                                                                                         loss.data[0]
-                                                                                        )
-                                )
-            else:
-                sys.stdout.write("-")
-                sys.stdout.flush()
+        if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader and self.verbose:
+            sys.stdout.write("epoch: {}, batch index: {}, train loss: {:.6f}\n".format(epoch_idx,
+                                                                                       batch_idx + 1,
+                                                                                       loss.data[0]
+                                                                                       )
+                            )
 
     @staticmethod
     def save_checkpoint(state, is_best, filename):
