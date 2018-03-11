@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import torch.nn as nn
 from torchvision import datasets, transforms
-from torchvision.datasets import ImageFolder, dset
+import torchvision.datasets as dset
 from torch.utils.data.sampler import SubsetRandomSampler
 
 from Model_Mnist import Model_Mnist
