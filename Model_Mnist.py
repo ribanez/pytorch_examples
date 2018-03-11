@@ -70,7 +70,7 @@ class Model_Mnist():
             if self.use_cuda:
                 x, y = x.cuda(), y.cuda()
             y_pred = self.model(x)
-            loss = self.loss_metric(y_pred, y).data[0]
+            loss = self.loss_metric(y_pred, y)
 
             self.optimizer.zero_grad()
             loss.backward()
@@ -86,7 +86,7 @@ class Model_Mnist():
                 x, y = x.cuda(), y.cuda()
             x, target = Variable(x, volatile=True), Variable(y, volatile=True)
             y_pred = self.model(x)
-            loss = self.loss_metric(y_pred, target).data[0]
+            loss = self.loss_metric(y_pred, target)
             _, pred_label = torch.max(y_pred.data, 1)
             total_cnt += x.data.size()[0]
             correct_cnt += (pred_label == target.data).sum()
@@ -98,7 +98,7 @@ class Model_Mnist():
         if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader:
             print("epoch: {}, batch index: {}, train loss: {:.6f}".format(idx_epoch,
                                                                           batch_idx + 1,
-                                                                          loss
+                                                                          loss.data[0]
                                                                           )
                   )
 
@@ -107,7 +107,7 @@ class Model_Mnist():
         if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_val_loader:
             print("epoch: {}, batch index: {}, validation loss: {:.6f}, acc: {:.3f}".format(idx_epoch,
                                                                                             batch_idx + 1,
-                                                                                            loss,
+                                                                                            loss.data[0],
                                                                                             correct_cnt * 1.0 / total_cnt
                                                                                             )
                   )
