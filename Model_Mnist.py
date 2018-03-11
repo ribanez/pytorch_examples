@@ -143,7 +143,7 @@ class Model_Mnist():
         self.optimizer.step()
         ## Imprimimos la perdida de cada epoca
         if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader:
-            sys.stdout.write("\nepoch: {}, batch index: {}, train loss: {:.6f}\n".format(epoch_idx,
+            sys.stdout.write("epoch: {}, batch index: {}, train loss: {:.6f}\n".format(epoch_idx,
                                                                                      batch_idx + 1,
                                                                                      loss.data[0]
                                                                                     )
