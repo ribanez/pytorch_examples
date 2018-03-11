@@ -109,7 +109,8 @@ model.save_model(path_model + "model_10epochs.tar")
 model2 = Model_Mnist(use_cuda=use_cuda,
                     loss_metric=loss_metric,
                     lr=lr,
-                    momentum=momentum)
+                    momentum=momentum,
+                    root_models=path_model)
 
 model2.retrain(path_model + "model_10epochs.tar")
 

@@ -82,12 +82,12 @@ class Model_Mnist():
 
 
     def on_train_begin(self):
-        sys.stdout.write("Comenzó el entrenamiento ...")
+        sys.stdout.write("\nComenzó el entrenamiento ...\n")
         val_loss = 1e5
         return val_loss
 
     def on_train_end(self):
-        sys.stdout.write("Terminó el entrenamiento ...")
+        sys.stdout.write("\nTerminó el entrenamiento ...\n")
         self.save_model(self.root_models + self.model.__name__() + "_last.tar")
         pass
 
@@ -109,7 +109,7 @@ class Model_Mnist():
             total_cnt += x.data.size()[0]
             correct_cnt += (pred_label == target.data).sum()
 
-        print("epoch: {}, validation loss: {:.6f}, acc: {:.3f}".format(epoch_idx,
+        print("\nepoch: {}, validation loss: {:.6f}, acc: {:.3f}\n".format(epoch_idx,
                                                                        loss.data[0],
                                                                        correct_cnt * 1.0 / total_cnt
                                                                        )
@@ -121,7 +121,7 @@ class Model_Mnist():
                               'state_dict': self.model.state_dict(),
                               'best_prec1': val_loss,
                              }, is_best,
-                             self.root_models + self.model.__name__() + "_epoch{}_vallos{}.tar".format(epoch_idx+1, val_loss)
+                             self.root_models + self.model.__name__() + "_epoch{}_val_loss{:.6f}.tar".format(epoch_idx+1, val_loss)
                              )
 
         return val_loss if  val_loss < val_loss_prev else val_loss_prev
