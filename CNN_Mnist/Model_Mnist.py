@@ -149,7 +149,7 @@ class Model_Mnist():
         loss.backward()
         self.optimizer.step()
         ## Imprimimos la perdida de cada 100 batches o en el batch final
-        if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader and self.verbose:
+        if ((batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader) and self.verbose:
             sys.stdout.write("epoch: {}, batch index: {}, train loss: {:.6f}\n".format(epoch_idx,
                                                                                            batch_idx + 1,
                                                                                            loss.data[0]
