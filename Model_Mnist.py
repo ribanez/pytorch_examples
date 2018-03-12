@@ -69,9 +69,7 @@ class Model_Mnist():
         val_loss = self.on_train_begin()
 
         for epoch_idx in range(1, epochs+1):
-            self.on_epoch_begin()
-            sys.stdout.write("epoch {}/{}".format(epoch_idx, epochs))
-            sys.stdout.flush()
+            self.on_epoch_begin(epoch_idx, epochs)
             self.pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval = total_batch_number).start()
 
             for batch_idx, (x, y) in enumerate(train_loader):
@@ -101,8 +99,8 @@ class Model_Mnist():
                              self.root_models + self.model.__name__() + "_finalmodel.tar"
                              )
 
-    def on_epoch_begin(self):
-        pass
+    def on_epoch_begin(self, epoch_idx, epochs):
+        sys.stdout.write("epoch {}/{}\n".format(epoch_idx, epochs))
 
     def on_epoch_end(self, epoch_idx, val_loader, val_loss_prev):
         ## Calculamos Accuracy y perdida en Validation Set
