@@ -34,7 +34,7 @@ class CNN(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
-        return F.log_softmax(x)
+        return F.log_softmax(x,  dim=1)
 
     def __name__(self):
         return "CNN"
@@ -70,6 +70,8 @@ class Model_Mnist():
 
         for epoch_idx in range(1, epochs+1):
             self.on_epoch_begin()
+            sys.stdout.write("epoch {}/{}".format(epoch_idx, epochs))
+            sys.stdout.flush()
             self.pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval = total_batch_number).start()
 
             for batch_idx, (x, y) in enumerate(train_loader):
