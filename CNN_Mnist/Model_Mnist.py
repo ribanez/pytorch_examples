@@ -3,7 +3,6 @@ import torch
 import shutil
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
 from torch.autograd import Variable
 from progressbar import ProgressBar, Percentage, Bar
 
@@ -13,11 +12,11 @@ from progressbar import ProgressBar, Percentage, Bar
 class CNN(nn.Module):
     """
     Neural network with:
-                    -convolutional -> Max Pool -> RELU
-                    -convolutional -> Max Pool -> RELU
-                    -FC -> RELU
-                    -dropout
-                    -FC -> Softmax
+                    -Convolutional -> Max Pool -> RELU
+                    -Convolutional -> Max Pool -> RELU -> Dropout
+                    -Flatten
+                    -Linear
+                    -Linear
     """
     def __init__(self):
         super(CNN, self).__init__()
