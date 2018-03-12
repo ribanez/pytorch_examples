@@ -120,7 +120,6 @@ class Model_Mnist():
         ## Calculamos Accuracy y perdida en Validation Set
         correct_cnt = 0
         total_cnt = 0
-        loss = 1e5
         for batch_idx, (x, y) in enumerate(val_loader):
             if self.use_cuda:
                 x, y = x.cuda(), y.cuda()
