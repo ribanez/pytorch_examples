@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.autograd import Variable
-from progressbar import ProgressBar, Percentage, Bar
+from progressbar2 import ProgressBar, Percentage, Bar
 
 
 ######## NEURAL NETWORK ##########
@@ -55,6 +55,8 @@ class Model_Mnist():
 
         self.optimizer = optim.SGD(self.model.parameters(), lr=lr, momentum=momentum)
 
+        self.pbar = ProgressBar()
+
     def retrain(self, path_file):
         if self.use_cuda:
             self.model.load_state_dict(torch.load(path_file))
@@ -68,8 +70,7 @@ class Model_Mnist():
 
         for epoch_idx in range(1, epochs+1):
             self.on_epoch_begin()
-            pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval = total_batch_number).start()
-
+            self.pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval = total_batch_number).start()
 
             for batch_idx, (x, y) in enumerate(train_loader):
 
@@ -79,8 +80,6 @@ class Model_Mnist():
                 loss = self.loss_metric(y_pred, y)
 
                 self.on_batch_end(loss, batch_idx, epoch_idx, len(train_loader))
-
-                pbar.update(batch_idx + 1)
 
             val_loss = self.on_epoch_end(epoch_idx, val_loader, val_loss)
 
@@ -148,12 +147,15 @@ class Model_Mnist():
         loss.backward()
         self.optimizer.step()
         ## Imprimimos la perdida de cada epoca
-        if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader and self.verbose:
-            sys.stdout.write("epoch: {}, batch index: {}, train loss: {:.6f}\n".format(epoch_idx,
-                                                                                       batch_idx + 1,
-                                                                                       loss.data[0]
-                                                                                       )
-                            )
+        if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader:
+            if self.verbose:
+                sys.stdout.write("epoch: {}, batch index: {}, train loss: {:.6f}\n".format(epoch_idx,
+                                                                                           batch_idx + 1,
+                                                                                           loss.data[0]
+                                                                                           )
+                                )
+            else:
+                self.pbar.update(batch_idx + 1)
 
     @staticmethod
     def save_checkpoint(state, is_best, filename):
