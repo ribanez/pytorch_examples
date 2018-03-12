@@ -81,6 +81,8 @@ class Model_Mnist():
 
                 self.on_batch_end(loss, batch_idx, epoch_idx, len(train_loader))
 
+            self.pbar.finish()
+
             val_loss = self.on_epoch_end(epoch_idx, val_loader, val_loss)
 
         self.on_train_end()
