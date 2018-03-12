@@ -21,14 +21,14 @@ class CNN(nn.Module):
     """
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Sequential(nn.Conv2d(in_channel =1,
-                                             out_channel = 10,
+        self.conv1 = nn.Sequential(nn.Conv2d(in_channels =1,
+                                             out_channels = 10,
                                              kernel_size=5),
                                    nn.ReLU(),
                                    nn.MaxPool2d(kernel_size = 2)
                                    )
-        self.conv2 = nn.Sequential(nn.Conv2d(in_channel = 10,
-                                             out_channel = 20,
+        self.conv2 = nn.Sequential(nn.Conv2d(in_channels = 10,
+                                             out_channels = 20,
                                              kernel_size=5),
                                    nn.ReLU(),
                                    nn.MaxPool2d(kernel_size = 2),
