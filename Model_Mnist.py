@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.autograd import Variable
-from progressbar2 import ProgressBar, Percentage, Bar
+from progressbar import ProgressBar, Percentage, Bar
 
 
 ######## NEURAL NETWORK ##########
