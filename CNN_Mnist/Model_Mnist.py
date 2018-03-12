@@ -42,7 +42,7 @@ class CNN(nn.Module):
 
 class Model_Mnist():
 
-    def __init__(self, use_cuda, loss_metric, lr, momentum, root_models, verbose = True):
+    def __init__(self, use_cuda, loss_metric, lr, momentum, root_models, verbose = False):
         self.use_cuda = use_cuda
         self.loss_metric = loss_metric
         self.root_models = root_models
@@ -127,7 +127,7 @@ class Model_Mnist():
              )
         val_loss = loss.data[0]
         ## Guardamos el modelo si es el mejor
-        is_best = val_loss < val_loss_prev
+        is_best = val_loss_prev > val_loss
         self.save_checkpoint({'epoch': epoch_idx + 1,
                               'name': self.model.__name__(),
                               'state_dict': self.model.state_dict(),
@@ -148,7 +148,7 @@ class Model_Mnist():
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-        ## Imprimimos la perdida de cada epoca
+        ## Imprimimos la perdida de cada 100 batches o en el batch final
         if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader and self.verbose:
             sys.stdout.write("epoch: {}, batch index: {}, train loss: {:.6f}\n".format(epoch_idx,
                                                                                            batch_idx + 1,
