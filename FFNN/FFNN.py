@@ -12,8 +12,8 @@ class FFNN(nn.Module):
     def __init__(self, input_size, 
                  hidden_size,
                  output_size, 
-                 number_hidden_layers,
-                 use_cuda):
+                 number_hidden_layers
+                 ):
         """
         Feed-Forward neural network
         Estructura de la red:
@@ -60,18 +60,11 @@ class FFNN(nn.Module):
         # Definimos las capas ocultas
         if number_hidden_layers > 0:
             for i in range(number_hidden_layers):
-                if use_cuda:
-                    self.hidden_layers.append(nn.Linear(in_features = hidden_size[i],
-                                                        out_features = hidden_size[i+1],
-                                                        bias = True
-                                                       ).cuda()
-                                             )
-                else:
-                    self.hidden_layers.append(nn.Linear(in_features=hidden_size[i],
-                                                        out_features=hidden_size[i + 1],
-                                                        bias=True
-                                                        )
-                                              )
+                self.hidden_layers.append(nn.Linear(in_features = hidden_size[i],
+                                                    out_features = hidden_size[i+1],
+                                                    bias = True
+                                                   )
+                                         )
 
         # Usaremos Tagente hiperbólica y sigmoide como funciones de activación
         self.tanh = nn.Tanh()
@@ -98,6 +91,15 @@ class FFNN(nn.Module):
         y_pred = x.view(-1, self.output_size)
 
         return y_pred
+
+    def cuda(self):
+        self.input_layer.cuda()
+        self.output_layer.cuda()
+        for hlayer in self.hidden_layers:
+            hlayer.cuda()
+
+        self.tanh.cuda()
+        self.sigmoid.cuda()
 
     def __name__(self):
       return "FFNN2L"
@@ -141,8 +143,8 @@ class Model_Mnist():
         self.model = FFNN(input_size, 
                           hidden_size,
                           output_size, 
-                          number_hidden_layers,
-                          use_cuda)
+                          number_hidden_layers
+                          )
         if self.use_cuda:
             self.model.cuda()
 
