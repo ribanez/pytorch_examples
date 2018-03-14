@@ -9,7 +9,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from CNN import Model_Mnist
 
 
-# Optiones para reentrenar el modelo
+# Opciones para re-entrenar el modelo
 retrain = False
 path_model_retrain = "./model_best.pt"
 
@@ -29,7 +29,7 @@ else:
     kwargs = {}
 
 
-# Directorio de los datos para el entrenamiento, si no contenemos los datos de Mnist los descargamos
+# Directorio de los datos para el entrenamiento, si no existen los datos de Mnist los descargamos
 root_data = './data'
 exist_data = os.path.isdir(root_data)
 
