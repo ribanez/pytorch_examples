@@ -62,7 +62,7 @@ class FFNN(nn.Module):
                 self.hidden_layers.append(nn.Linear(in_features = hidden_size[i],
                                                     out_features = hidden_size[i+1],
                                                     bias = True
-                                                   )
+                                                   ).cuda()
                                          )
 
         # Usaremos Tagente hiperbólica y sigmoide como funciones de activación
