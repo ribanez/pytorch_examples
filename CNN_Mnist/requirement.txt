@@ -1,4 +1,0 @@
-numpy==1.14.0
-progressbar2==3.36.0
-torch==0.3.0.post4
-torchvision==0.2.0

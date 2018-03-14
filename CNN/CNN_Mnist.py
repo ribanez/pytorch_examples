@@ -137,7 +137,7 @@ class Model_Mnist():
                                                                        )
              )
         val_loss = loss.data[0]
-        ## Guardamos el modelo si es el mejor
+        ## Guardamos el modelo si es mejor
         is_best = val_loss_prev > val_loss
         self.save_checkpoint({'epoch': epoch_idx + 1,
                               'name': self.model.__name__(),
@@ -159,7 +159,7 @@ class Model_Mnist():
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-        ## Imprimimos la perdida de cada 100 batches o en el batch final
+        ## Imprimimos la perdida cada 100 batches o en el batch final
         if ((batch_idx + 1) % 100 == 0 or (batch_idx + 1) == len_train_loader) and self.verbose:
             sys.stdout.write("epoch: {}, batch index: {}, train loss: {:.6f}\n".format(epoch_idx,
                                                                                            batch_idx + 1,

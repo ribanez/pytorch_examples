@@ -6,7 +6,7 @@ from torchvision import transforms
 import torchvision.datasets as dset
 from torch.utils.data.sampler import SubsetRandomSampler
 
-from Model_Mnist import Model_Mnist
+from CNN_Mnist import Model_Mnist
 
 
 ## RETRAIN
