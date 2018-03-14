@@ -93,6 +93,9 @@ class FFNN(nn.Module):
         return y_pred
 
     def cuda(self):
+        """
+        Metodo para usar GPU con modelo FFNN
+        """
         self.input_layer.cuda()
         self.output_layer.cuda()
         for hlayer in self.hidden_layers:
