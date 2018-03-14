@@ -6,7 +6,7 @@ from torchvision import transforms
 import torchvision.datasets as dset
 from torch.utils.data.sampler import SubsetRandomSampler
 
-from CNN import Model_Mnist
+from FFNN import Model_Mnist
 
 
 # Optiones para reentrenar el modelo
