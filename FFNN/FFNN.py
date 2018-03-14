@@ -1,17 +1,11 @@
 import sys
-import os
 import torch
 import shutil
 import torch.nn as nn
 import torch.optim as optim
 from torch.autograd import Variable
 from progressbar import ProgressBar, Percentage, Bar
-from torchvision import transforms
-import torchvision.datasets as dset
-from torch.utils.data.sampler import SubsetRandomSampler
-import numpy as np
-from torch.nn import Parameter
-from torch.utils.data import Dataset, DataLoader
+
 
 class FFNN(torch.nn.Module):
 

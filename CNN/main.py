@@ -6,20 +6,20 @@ from torchvision import transforms
 import torchvision.datasets as dset
 from torch.utils.data.sampler import SubsetRandomSampler
 
-from CNN_Mnist import Model_Mnist
+from CNN import CNN_Mnist
 
 
-## RETRAIN
+# Optiones para reentrenar el modelo
 retrain = False
-path_model_retrain = ""
+path_model_retrain = "./model_best.pt"
 
 
-## SEED ##
+# Seteamos la semilla para poder reproducir el modelo despues
 
 seed = 57
 torch.manual_seed(seed)
 
-## CUDA
+# Checkeamos que estemos usando GPU
 use_cuda = torch.cuda.is_available()
 
 if use_cuda:
@@ -29,7 +29,7 @@ else:
     kwargs = {}
 
 
-# Training settings
+# Directorio de los datos para el entrenamiento, si no contenemos los datos de Mnist los descargamos
 root_data = './data'
 exist_data = os.path.isdir(root_data)
 
@@ -52,6 +52,8 @@ train_idx, valid_idx = indices[split:], indices[:split]
 train_sampler = SubsetRandomSampler(train_idx)
 valid_sampler = SubsetRandomSampler(valid_idx)
 
+
+# Directorio de los modelos
 path_model = './models/'
 exist_model = os.path.isdir(path_model)
 
@@ -59,11 +61,17 @@ if not exist_model:
     os.mkdir(path_model)
 
 
-## Hyper Parameters
+# Hiperparámetros para el entrenamiento
 batch_size = 32
 epochs = 10
 lr = 0.01
 momentum = 0.5
+
+input_size = 1
+hidden_size = [10, 20, 50, 320]
+output_size = 10
+kernel_size = [5, 2, 5, 2]
+dropout = 0.3
 
 
 train_loader = torch.utils.data.DataLoader(dataset=train_set,
@@ -88,7 +96,13 @@ model = Model_Mnist(use_cuda=use_cuda,
                     loss_metric=loss_metric,
                     lr=lr,
                     momentum=momentum,
-                    root_models=path_model)
+                    root_models=path_model,
+                    input_size = input_size,
+                    hidden_size = hidden_size,
+                    output_size = output_size,
+                    kernel_size = kernel_size,
+                    dropout = dropout
+                    )
 
 if not retrain:
     model.train(epochs=epochs,
