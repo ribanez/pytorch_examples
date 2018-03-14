@@ -23,8 +23,10 @@ class CNN(nn.Module):
                     -Convolutional_2(input_size = hidden_size[0],
                                      output_size = hidden_size[1])
                     -Flatten to hidden_size[1]
-                    -Linear(input_size = hidden_size[1],
-                            output_size = output_size)
+                    -Linear1(input_size = hidden_size[2],
+                             output_size = hidden_size[3])
+                    -Linear2(input_size = hidden_size[3],
+                             output_size = output_size)
 
         :param input_size: (int) dimension del entrada
         :param hidden_size: (array) con las dimensiones de las capas ocultas
