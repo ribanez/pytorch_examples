@@ -1,2 +1,3 @@
-*.iws
-*.xml
+**.iws
+**.xml
+**.iml
