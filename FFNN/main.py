@@ -68,9 +68,9 @@ lr = 0.01
 momentum = 0.5
 
 input_size = 28*28
+hidden_size = [2500, 2000, 1500, 1000, 50]
 output_size = 10
 number_hidden_layers = 4
-hidden_size = [2500, 2000, 1500, 1000, 50]
 
 
 train_loader = torch.utils.data.DataLoader(dataset=train_set,

@@ -45,7 +45,6 @@ class FFNN(torch.nn.Module):
         self.hidden_layers = []
         self.input_size = input_size
         self.output_size = output_size
-        self.hidden_size_weight = hidden_size
 
         # Definimos la capa de entrada
         self.input_layer = nn.Linear(in_features = input_size,
@@ -59,12 +58,12 @@ class FFNN(torch.nn.Module):
 
         # Definimos las capas ocultas
         if number_hidden_layers > 0:
-          for i in range(number_hidden_layers):
-            self.hidden_layers.append(nn.Linear(in_features = hidden_size[i],
-                                                out_features = hidden_size[i+1],
-                                                bias = True
-                                               )
-                                     )
+            for i in range(number_hidden_layers):
+                self.hidden_layers.append(nn.Linear(in_features = hidden_size[i],
+                                                    out_features = hidden_size[i+1],
+                                                    bias = True
+                                                   )
+                                         )
 
         # Usaremos Tagente hiperbólica y sigmoide como funciones de activación
         self.tanh = nn.Tanh()
@@ -80,8 +79,8 @@ class FFNN(torch.nn.Module):
 
         #hidden_layers
         for hlayer in self.hidden_layers:
-          x = hlayer(x)
-          x = self.tanh(x)
+            x = hlayer(x)
+            x = self.tanh(x)
 
         #output
         x = self.output_layer(x)
@@ -171,18 +170,18 @@ class Model_Mnist():
 
             with ProgressBar(widgets=[Percentage(), Bar()], maxval = total_batch_number) as pbar:
 
-              for batch_idx, (x, y) in enumerate(train_loader):
-                  x, y = Variable(x), Variable(y)
-                  if self.use_cuda:
+                for batch_idx, (x, y) in enumerate(train_loader):
+                    x, y = Variable(x), Variable(y)
+                    if self.use_cuda:
                       x, y = x.cuda(), y.cuda()
 
-                  y_pred = self.model(x)
-                  loss = self.loss_metric(y_pred, y)
-                  self.optimizer.zero_grad()
-                  loss.backward()
-                  self.optimizer.step()
+                    y_pred = self.model(x)
+                    loss = self.loss_metric(y_pred, y)
+                    self.optimizer.zero_grad()
+                    loss.backward()
+                    self.optimizer.step()
 
-                  pbar.update(batch_idx+ 1)
+                    pbar.update(batch_idx+ 1)
 
             sys.stdout.write("epoch: {}, train loss: {:.6f}\n".format(epoch_idx,
                                                                       loss.data[0]
