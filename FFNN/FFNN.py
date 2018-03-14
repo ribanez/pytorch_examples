@@ -15,16 +15,29 @@ class FFNN(torch.nn.Module):
                  number_hidden_layers):
         """
         Feed-Forward neural network
-        :param input_size: (int)
-        :param hidden_size: (array)
-        :param output_size: (int)
-        :param number_hidden_layers:
+        Estructura de la red:
+                    -Linear_1
+                    -Linear_2
+                    ...
+                    -Linear_n
+
+        Dimensiones de las capas:
+                    -Linear_1(input_size, hidden_size[0])
+                    -Linear_2(hidden_size[0], hidden_size[1])
+                    ...
+                    -Linear_k(hidden_size[k-2], hidden_size[k-1]
+                    ...
+                    -Linear_n(hidden_size[n-2], output_size)
+        :param input_size: (int) dimension del entrada
+        :param hidden_size: (array) con las dimensiones de las capas ocultas
+        :param output_size: (int) dimension de la salida
+        :param number_hidden_layers: (int) número de capas ocultas
         """
 
         super(FFNN, self).__init__()
 
         if len(hidden_size) is not (number_hidden_layers+1):
-            raise ValueError("dimension hidden layers is {} and dictionary weight have {} elements".format(len(dict_weight_hidden_layers),
+            raise ValueError("dimension hidden layers is {} and dictionary weight have {} elements".format(len(hidden_size),
                                                                                                            len(number_hidden_layers)
                                                                                                           )
                             )
@@ -34,14 +47,17 @@ class FFNN(torch.nn.Module):
         self.output_size = output_size
         self.hidden_size_weight = hidden_size
 
+        # Definimos la capa de entrada
         self.input_layer = nn.Linear(in_features = input_size,
                                      out_features = hidden_size[0],
                                      bias = True)
 
+        # Definimos la capa de salida
         self.output_layer = nn.Linear(in_features = hidden_size[-1],
                                       out_features = output_size,
                                       bias = True)
 
+        # Definimos las capas ocultas
         if number_hidden_layers > 0:
           for i in range(number_hidden_layers):
             self.hidden_layers.append(nn.Linear(in_features = hidden_size[i],
@@ -50,12 +66,12 @@ class FFNN(torch.nn.Module):
                                                )
                                      )
 
+        # Usaremos Tagente hiperbólica y sigmoide como funciones de activación
         self.tanh = nn.Tanh()
-
         self.sigmoid = nn.Sigmoid()        
 
     def forward(self, x):
-        # reshape
+        # redimensionamos la entrada, pasamos la imagen a un tensor
         x = x.view(-1, self.input_size)
 
         #input
@@ -71,7 +87,7 @@ class FFNN(torch.nn.Module):
         x = self.output_layer(x)
         x = self.sigmoid(x)
 
-        #reshape
+        #redimensionamos la salida para que tenga la dimensión del número de clases
         y_pred = x.view(-1, self.output_size)
 
         return y_pred
@@ -80,7 +96,7 @@ class FFNN(torch.nn.Module):
       return "FFNN2L"
 
 
-class FFNN_Mnist():
+class Model_Mnist():
 
     def __init__(self, 
                  use_cuda, 
@@ -89,28 +105,48 @@ class FFNN_Mnist():
                  momentum, 
                  root_models, 
                  input_size, 
-                 hidden_size_weight, 
+                 hidden_size,
                  output_size, 
-                 number_hidden_layers,
-                 verbose = False):
+                 number_hidden_layers):
+        """
+        Utilizamos una feed-forward neural network
+
+        :param use_cuda: (boolean) indica si está usando o no GPU
+        :param loss_metric: (Loss function) función de perdida para el modelo.
+               ref: http://pytorch.org/docs/0.3.1/nn.html#id38
+        :param lr: (float) learning rate para el optimizador SGD (stochastic gradient descent)
+               ref: http://pytorch.org/docs/0.3.1/optim.html
+        :param momentum: (float) momentum para el optimizador SGD (stochastic gradient descent)
+               ref: http://pytorch.org/docs/0.3.1/optim.html
+        :param root_models: (string) carpeta donde se guardarán los modelos
+        :param input_size: (int) dimension del entrada
+        :param hidden_size: (array) con las dimensiones de las capas ocultas
+        :param output_size: (int) dimension de la salida
+        :param number_hidden_layers: (int) número de capas ocultas
+        """
 
         self.use_cuda = use_cuda
         self.loss_metric = loss_metric
         self.root_models = root_models
-        self.verbose = verbose
         self.total_batch_number = -1
 
+        # Creamos un modelo de red feed-forward
         self.model = FFNN(input_size, 
-                          hidden_size_weight, 
+                          hidden_size,
                           output_size, 
                           number_hidden_layers)
 
         if self.use_cuda:
             self.model.cuda()
 
+        ## Creamos el optimizador SGD (stochastic gradient descent)
         self.optimizer = optim.SGD(self.model.parameters(), lr=lr, momentum=momentum)
 
     def load_to_retrain(self, path_file):
+        """
+        Método para leer un modelo ya entrenado para poder re-entrenarlo
+        :param path_file: (string) ruta al archivo a re-entrenar
+        """
         if self.use_cuda:
             self.model.load_state_dict(torch.load(path_file))
         else:
@@ -118,6 +154,15 @@ class FFNN_Mnist():
             self.model.cpu()
 
     def train(self, epochs, train_loader, val_loader):
+        """
+        Método para entrenar en modelo
+        :param epochs: (int) numero de épocas que se entrenará el modelo
+        :param train_loader: (Data.Loader) Iterador con los datos provenientes del data_set
+               ref: http://pytorch.org/docs/0.3.1/data.html#torch.utils.data.DataLoader
+        :param val_loader: (Data.Loader) Iterador con los datos que se utilizarán para validar el entrenamiento
+               ref: http://pytorch.org/docs/0.3.1/data.html#torch.utils.data.DataLoader
+        """
+
         total_batch_number = len(train_loader)
         val_loss_prev = 1e5
 
@@ -144,6 +189,7 @@ class FFNN_Mnist():
                                                                      )
                             )
 
+            # Calculamos la perdida y accuracy en el conjunto de validación
             correct_cnt = 0
             total_cnt = 0
             for batch_idx, (x, y) in enumerate(val_loader):
@@ -156,37 +202,40 @@ class FFNN_Mnist():
                 total_cnt += x.data.size()[0]
                 correct_cnt += (pred_label == target.data).sum()
 
-            ## Imprimimos la perdida y el accuracy en el conjunto de validacion
             sys.stdout.write("\nepoch: {}, validation loss: {:.6f}, acc: {:.3f}\n\n".format(epoch_idx,
                                                                                             loss.data[0],
                                                                                             correct_cnt * 1.0 / total_cnt
                                                                                             )
                              )
 
+            ## Guardamos el modelo
             val_loss = loss.data[0]
-            ## Guardamos el modelo si es mejor
             is_best = val_loss_prev > val_loss
-            self.save_checkpoint({'epoch': epoch_idx + 1,
-                                  'name': self.model.__name__(),
-                                  'state_dict': self.model.state_dict(),
-                                  'best_prec1': val_loss,
-                                  }, is_best,
-                                 self.root_models + self.model.__name__() + "_epoch{}_val_loss{:.6f}.pt".format(
-                                     epoch_idx + 1, val_loss)
-                                 )
 
+            ## Podríamos no guardar en cada época sino que cada K epocas ...
+            self.save_checkpoint(self.model.state_dict(),
+                                 is_best,
+                                 self.root_models + self.model.__name__() + "_epoch{}_val_loss{:.6f}.pt".format(epoch_idx + 1, val_loss))
 
             val_loss_prev = val_loss if  val_loss < val_loss_prev else val_loss_prev
 
         sys.stdout.write("\nTerminó el entrenamiento ...\n")
-        self.save_checkpoint({'name': self.model.__name__(),
-                              'state_dict': self.model.state_dict(),
-                              }, False,
+
+        ## Guardamos el ultimo modelo, sea mejor o no, por si se quiere continuar el entrenamiento
+        self.save_checkpoint(self.model.state_dict(), False,
                              self.root_models + self.model.__name__() + "_finalmodel.pt"
                              )
 
     @staticmethod
-    def save_checkpoint(state, is_best, filename):
-        torch.save(state["state_dict"], filename)
+    def save_checkpoint(state_dict, is_best, filename):
+        """
+        Metodo para guardar los pesos
+        :param state_dict: (dictionary) pesos del modelo
+        :param is_best: (boolean) condicion de si el modelo es mejor a los anteriores o no, en caso de ser True
+        sobre-escribirá el modelo "model_best.pt"
+        :param filename: (string) ruta donde se guardará el modelo
+        :return:
+        """
+        torch.save(state_dict , filename)
         if is_best:
             shutil.copyfile(filename, 'model_best.pt')

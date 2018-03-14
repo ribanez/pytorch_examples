@@ -88,7 +88,7 @@ class Model_Mnist():
     def __init__(self, use_cuda, loss_metric, lr, momentum, root_models,
                  input_size, hidden_size, output_size, kernel_size, dropout):
         """
-        Utilizando red convolucional
+        Utilizamos una red convolucional
 
         :param use_cuda: (boolean) indica si está usando o no GPU
         :param loss_metric: (Loss function) función de perdida para el modelo.
