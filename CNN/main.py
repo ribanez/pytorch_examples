@@ -68,7 +68,7 @@ lr = 0.01
 momentum = 0.5
 
 input_size = 1
-hidden_size = [10, 20]
+hidden_size = [10, 20, 320, 50]
 output_size = 10
 kernel_size = [5, 2, 5, 2]
 dropout = 0.3

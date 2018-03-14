@@ -55,8 +55,11 @@ class CNN(nn.Module):
 
         self.drop = nn.Dropout2d(p = dropout)
 
-        self.linear1 = nn.Linear(in_features = hidden_size[1],
+        self.linear1 = nn.Linear(in_features = hidden_size[2],
+                                 out_features = hidden_size[3])
+        self.linear2 = nn.Linear(in_features = hidden_size[3],
                                  out_features = output_size)
+
 
     def forward(self, x):
 
@@ -68,8 +71,9 @@ class CNN(nn.Module):
         x = self.maxpool2(x)
         x = F.relu(x)
 
-        x = x.view(-1, self.hidden_size[1])
+        x = x.view(-1, self.hidden_size[2])
         x = self.linear1(x)
+        x = self.linear2(x)
 
         return F.log_softmax(x,  dim=1)
 
