@@ -7,7 +7,7 @@ from torch.autograd import Variable
 from progressbar import ProgressBar, Percentage, Bar
 
 
-class FFNN(torch.nn.Module):
+class FFNN(nn.Module):
 
     def __init__(self, input_size, 
                  hidden_size,
@@ -134,7 +134,6 @@ class Model_Mnist():
                           hidden_size,
                           output_size, 
                           number_hidden_layers)
-
         if self.use_cuda:
             self.model.cuda()
 
