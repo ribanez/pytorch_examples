@@ -61,12 +61,12 @@ class CNN(nn.Module):
     def forward(self, x):
 
         x = self.conv1(x)
-        x = nn.ReLU(x)
         x = self.maxpool1(x)
+        x = F.relu(x)
 
         x = self.conv2(x)
-        x = nn.ReLU(x)
         x = self.maxpool2(x)
+        x = F.relu(x)
 
         x = x.view(-1, self.hidden_size[-1])
         x = self.linear1(x)
