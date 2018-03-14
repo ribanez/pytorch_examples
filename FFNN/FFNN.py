@@ -9,68 +9,73 @@ from progressbar import ProgressBar, Percentage, Bar
 
 class FFNN(torch.nn.Module):
 
-    # En el inicializador debemos crear los parámetros de la red
-    # así como todo lo necesario para hacer las predicciones.
     def __init__(self, input_size, 
-                 hidden_size_weight, 
+                 hidden_size,
                  output_size, 
                  number_hidden_layers):
-      
+        """
+        Feed-Forward neural network
+        :param input_size: (int)
+        :param hidden_size: (array)
+        :param output_size: (int)
+        :param number_hidden_layers:
+        """
+
         super(FFNN, self).__init__()
-        
-        if len(dict_weight_hidden_layers) is not (number_hidden_layers+1):
+
+        if len(hidden_size) is not (number_hidden_layers+1):
             raise ValueError("dimension hidden layers is {} and dictionary weight have {} elements".format(len(dict_weight_hidden_layers),
                                                                                                            len(number_hidden_layers)
                                                                                                           )
                             )
-        
+
         self.hidden_layers = []
         self.input_size = input_size
         self.output_size = output_size
-        self.hidden_size_weight = hidden_size_weight
-        
+        self.hidden_size_weight = hidden_size
+
         self.input_layer = nn.Linear(in_features = input_size,
-                                     out_features = hidden_size_weight[0],
+                                     out_features = hidden_size[0],
                                      bias = True)
-        
-        self.output_layer = nn.Linear(in_features = hidden_size_weight[-1],
+
+        self.output_layer = nn.Linear(in_features = hidden_size[-1],
                                       out_features = output_size,
                                       bias = True)
-        
+
         if number_hidden_layers > 0:
           for i in range(number_hidden_layers):
-            self.hidden_layers.append(nn.Linear(in_features = hidden_size_weight[i],
-                                                out_features = hidden_size_weight[i+1],
+            self.hidden_layers.append(nn.Linear(in_features = hidden_size[i],
+                                                out_features = hidden_size[i+1],
                                                 bias = True
                                                )
                                      )
- 
+
         self.tanh = nn.Tanh()
-        
+
         self.sigmoid = nn.Sigmoid()        
-        
+
     def forward(self, x):
         # reshape
         x = x.view(-1, self.input_size)
-        
+
         #input
         x = self.input_layer(x)
         x = self.tanh(x)
-        
+
         #hidden_layers
         for hlayer in self.hidden_layers:
           x = hlayer(x)
           x = self.tanh(x)
-        
+
         #output
         x = self.output_layer(x)
         x = self.sigmoid(x)
-        
+
         #reshape
         y_pred = x.view(-1, self.output_size)
-        
+
         return y_pred
-        
+
     def __name__(self):
       return "FFNN2L"
 
@@ -88,7 +93,7 @@ class FFNN_Mnist():
                  output_size, 
                  number_hidden_layers,
                  verbose = False):
-      
+
         self.use_cuda = use_cuda
         self.loss_metric = loss_metric
         self.root_models = root_models
@@ -120,7 +125,7 @@ class FFNN_Mnist():
             sys.stdout.write("epoch {}/{}\n".format(epoch_idx, epochs))
 
             with ProgressBar(widgets=[Percentage(), Bar()], maxval = total_batch_number) as pbar:
-              
+
               for batch_idx, (x, y) in enumerate(train_loader):
                   x, y = Variable(x), Variable(y)
                   if self.use_cuda:
