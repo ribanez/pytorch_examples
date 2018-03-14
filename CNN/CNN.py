@@ -61,14 +61,14 @@ class CNN(nn.Module):
     def forward(self, x):
 
         x = self.conv1(x)
-        x = self.maxpool1(x)
+        x = self.maxpool1(x, 2)
         x = F.relu(x)
 
         x = self.conv2(x)
-        x = self.maxpool2(x)
+        x = self.maxpool2(x, 2)
         x = F.relu(x)
 
-        x = x.view(-1, self.hidden_size[-1])
+        x = x.view(-1, self.hidden_size[1])
         x = self.linear1(x)
 
         return F.log_softmax(x,  dim=1)
