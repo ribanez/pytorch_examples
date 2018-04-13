@@ -1,5 +1,4 @@
 import os
-import sys
 import torch
 from tqdm import tqdm
 import torch.optim as optim
@@ -7,8 +6,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 from input_data import InputData
-
-
 
 
 class SGModel(nn.Module):
@@ -121,9 +118,7 @@ def SGtest():
     folder_test = "./test/"
 
     if not os.path.exists(path=folder_test):
-        os.mkdir(path=folder_test,
-                 mode=0o755
-                 )
+        os.makedirs(folder_test)
 
     file_name = "SGModel_test.txt"
     use_cuda = torch.cuda.is_available()

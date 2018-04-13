@@ -21,7 +21,7 @@ class InputData:
         word_frequency = dict()
         for line in self.input_file:
             self.sentence_count += 1
-            line = line.strip().split(' ')
+            line = line.strip().split()
             self.sentence_length += len(line)
             for w in line:
                 try:
