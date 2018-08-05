@@ -30,7 +30,6 @@ class BiLSTM(torch.nn.Module):
                                     dropout= dropout,
                                     bidirectional=True)
 
-
         self.hidden2target = torch.nn.Linear(self.hidden_dim, self.output_size)
 
         self.hidden = self.init_hidden()

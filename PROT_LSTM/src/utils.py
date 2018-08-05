@@ -1,10 +1,7 @@
 import torch
 import numpy as np
-
 from torch.nn.utils.rnn import pack_padded_sequence as pack
 from torch.autograd import Variable
-#from torch import cat, stack, zeros, cuda
-#from torch import atan2, stack, sin, cos, Tensor, cross, norm, mm
 
 
 def stack_pack(var, lengths):
@@ -93,3 +90,12 @@ def rad2deg(rad_angle):
         angle = angle + 360
 
     return angle
+
+def MAE(x, y):
+    return sum(np.minimum(abs(y - x), 360 - abs(y - x))) / len(x)
+
+def dRMSD(x, y):
+    return np.linalg.norm(pdist(x) - pdist(y))/((len(x)*(len(x)-1)/2)**(0.5))
+
+def rmsd(outputs, labels):
+    return (3**(0.5))*((outputs - labels)**(2)).mean()**(0.5)
